@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercice d'entraînement — Relation client terrain, Jour 2</title>
+<style>
+:root{--prune:#8C1E70;--dark:#5E1349;--light:#F4E6EE;--rose:#C77BAA;--vert:#283C28;--gris:#3C3C3C;--gmoy:#8A7A85;--trame:#E8DCE5;--fond:#FAF6F8;--ok:#2F7A4F;--ko:#B23B3B;--mid:#B5852A}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Calibri,"Segoe UI",Carlito,Arial,sans-serif;background:var(--fond);color:var(--gris);font-size:16px;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px 40px}
+header.top{background:var(--dark);color:#fff;padding:22px 0 20px;border-bottom:5px solid var(--rose)}
+header.top .kick{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--rose);font-weight:700}
+header.top h1{margin:6px 0 4px;font-size:28px;line-height:1.2}
+header.top .sub{color:var(--trame);font-style:italic}
+.card{background:#fff;border:1px solid var(--trame);border-radius:10px;padding:20px 22px;margin:18px 0;box-shadow:0 1px 3px rgba(94,19,73,.06)}
+.card h2{margin:0 0 6px;color:var(--dark);font-size:21px}
+.card h3{margin:14px 0 6px;color:var(--prune);font-size:17px}
+.consigne{background:var(--light);border-left:5px solid var(--prune);padding:12px 16px;border-radius:0 8px 8px 0;margin:10px 0 14px}
+.tag{display:inline-block;background:var(--light);color:var(--prune);font-weight:700;font-size:12px;padding:2px 9px;border-radius:20px;margin-right:6px}
+.item{display:grid;grid-template-columns:1fr 290px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--trame)}
+.item:first-of-type{border-top:0}
+.item .q{font-weight:600}
+select,input[type=text],textarea{font:inherit;color:var(--gris);border:1.5px solid var(--trame);border-radius:7px;padding:8px 10px;background:#fff;width:100%}
+select:focus,input:focus,textarea:focus{outline:2px solid var(--rose);border-color:var(--prune)}
+textarea{min-height:130px;resize:vertical}
+select.ok{border-color:var(--ok);background:#eef7f1}select.ko{border-color:var(--ko);background:#fbeeee}
+.fb{grid-column:1/-1;font-size:14px;padding:8px 12px;border-radius:7px;display:none}
+.fb.show{display:block}.fb.ok{background:#eef7f1;border-left:4px solid var(--ok)}.fb.ko{background:#fbeeee;border-left:4px solid var(--ko)}
+.btn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:11px 20px;cursor:pointer;background:var(--prune);color:#fff}
+.btn:hover{background:var(--dark)}
+.btn[disabled]{background:#cbbfc7;cursor:not-allowed}
+.btn.sec{background:#fff;color:var(--prune);border:2px solid var(--prune)}
+.btn.done{background:var(--ok)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.score{font-weight:700;color:var(--dark)}
+.pill{display:inline-block;padding:4px 12px;border-radius:20px;background:var(--light);color:var(--prune);font-weight:700}
+.progress{height:8px;background:var(--trame);border-radius:6px;overflow:hidden;margin:10px 0}
+.progress>div{height:100%;background:var(--prune);width:0;transition:width .3s}
+table.t{width:100%;border-collapse:collapse;font-size:14.5px;margin:8px 0}
+table.t th{background:var(--dark);color:#fff;text-align:left;padding:8px}
+table.t td{border-bottom:1px solid var(--trame);padding:8px;vertical-align:top}
+table.t tr:nth-child(even) td{background:var(--fond)}
+.muted{color:var(--gmoy);font-size:14px}
+.big{font-size:44px;font-weight:800;color:var(--prune);line-height:1}
+.hidden{display:none!important}
+footer.foot{text-align:center;color:var(--gmoy);font-size:12px;padding:20px 0}
+.warn{background:#fff7e8;border-left:5px solid var(--mid);padding:10px 14px;border-radius:0 8px 8px 0}
+.counter{font-size:13px;color:var(--gmoy);text-align:right}
+@media (max-width:700px){.item{grid-template-columns:1fr}header.top h1{font-size:23px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="kick">TMK Performances · Eco Conso Habitat — Relation client terrain · Jour 2</div><h1>Exercice d'entraînement — Relation client terrain, Jour 2</h1><div class="sub">Accueil, entretien téléphonique et situations délicates · 3 ateliers</div></div></header>
+<main class="wrap">
+
+<div class="card"><div class="consigne"><b>Exercice d'entraînement, non noté.</b> Réalisez chaque atelier à la fin de la séquence indiquée. Quand vous validez un atelier, vos réponses sont <b>figées</b> et la correction s'affiche : impossible de les modifier ensuite. Gardez cette page ouverte toute la journée : si vous la rouvrez sur le même poste, vos ateliers déjà validés sont conservés. Pour tout recommencer, utilisez « Rejouer tout l'exercice ».</div>
+<div class="row" style="justify-content:space-between"><span>Ateliers validés : <span class="pill" id="nbv">0 / 3</span></span><span>Score cumulé : <span class="pill" id="tot">—</span></span></div>
+<div class="progress"><div id="bar"></div></div></div>
+<div id="ateliers"></div>
+<div class="card"><div class="row" style="justify-content:center"><button class="btn sec" id="replay">Rejouer tout l'exercice</button></div></div>
+</main>
+<footer class="foot">TMK Performances - N° Siret : 49841924100027 - Code NAF : 8559A</footer>
+<script>
+
+var DATA=[{"seq":"S02","titre":"Atelier A1 — L'accueil physique","consigne":"Pour chaque comportement, indiquez s'il s'agit d'une bonne pratique ou d'une erreur.","options":["Bonne pratique","Erreur"],"items":[{"txt":"Dire bonjour même si le prospect ne le dit pas","c":0,"e":"On prend la main sur l'échange et on pose un cadre."},{"txt":"Se présenter avec son prénom et le nom de l'entreprise","c":0,"e":"La transparence rassure."},{"txt":"Enchaîner sur les promotions avant de s'être présenté","c":1,"e":"Le prospect ne sait pas à qui il parle."},{"txt":"Reculer d'un pas après avoir sonné","c":0,"e":"On respecte l'espace du prospect."},{"txt":"Insister face à un prospect méfiant pour qu'il ouvre plus grand","c":1,"e":"Le méfiant se rassure par la transparence, pas par la pression."},{"txt":"Conclure en proposant un rendez-vous téléphonique avec un créneau","c":0,"e":"Savoir conclure : 7e condition de réussite."}],"bonus":{"txt":"Laquelle de ces conditions fait partie des 7 conditions de réussite de l'accueil physique ?","options":["Parler le plus possible","Détecter les signes pour prévenir les obstacles","Éviter de sourire pour paraître sérieux","Donner tous les prix d'emblée"],"c":1,"e":"Observer le prospect permet d'anticiper ses freins."}},{"seq":"S03","titre":"Atelier A2 — Quelle étape de l'appel ?","consigne":"Pour chaque phrase du chargé de clientèle, identifiez l'étape de l'entretien téléphonique.","options":["Accueil / prise de contact","Questionnement","Reformulation","Solution","Validation","Prise de congé"],"items":[{"txt":"« Croque Gel, Julie Martin, bonjour ! »","c":0,"e":"Service, prénom, nom, bonjour."},{"txt":"« Pour combien de personnes cuisinez-vous habituellement ? »","c":1,"e":"Question de découverte."},{"txt":"« Si je comprends bien, vous souhaitez des plats simples pour les soirs de semaine. »","c":2,"e":"Reprise de ce que dit le client."},{"txt":"« Je vous propose notre lot de 2 pizzas 4 fromages, actuellement à − 25 %. »","c":3,"e":"Solution adaptée au besoin."},{"txt":"« Je récapitule : livraison jeudi entre 14 h et 16 h, règlement par carte à la livraison. »","c":4,"e":"Validation de la commande, du règlement et de la livraison."},{"txt":"« Êtes-vous satisfaite de notre échange ? Merci Madame Garnier, belle journée ! »","c":5,"e":"Mesure de la satisfaction puis prise de congé."}],"bonus":{"txt":"Dans un appel sortant, que faut-il annoncer juste après la prise de contact ?","options":["Le prix des produits","Le contexte et la raison de l'appel","La durée de l'appel","Les conditions de remboursement"],"c":1,"e":"« Suite à la visite de notre commercial… » : en sortant, c'est vous qui dérangez."}},{"seq":"S04","titre":"Atelier A3 — Face au mécontentement","consigne":"Pour chaque réaction du chargé de clientèle, indiquez s'il s'agit d'une bonne réaction ou d'une maladresse.","options":["Bonne réaction","Maladresse"],"items":[{"txt":"« Calmez-vous, Monsieur. »","c":1,"e":"Cette injonction fait monter la tension."},{"txt":"Écouter le client jusqu'au bout sans l'interrompre","c":0,"e":"Première étape face à l'agressivité."},{"txt":"« Si je comprends bien, il manque le lot de pizzas dans votre livraison. »","c":0,"e":"La reformulation montre l'intérêt porté."},{"txt":"« Ce n'est pas ma faute, c'est le livreur. »","c":1,"e":"Se défausser n'apporte aucune solution."},{"txt":"Promettre un remboursement qu'on n'a pas le droit d'accorder","c":1,"e":"Restez dans le périmètre de votre mission."},{"txt":"« Je ne peux pas faire cela moi-même ; ce que je peux faire, c'est vous relivrer demain. »","c":0,"e":"Expliquer le refus et proposer une alternative."}],"bonus":{"txt":"Qu'est-ce qui peut désamorcer une insatisfaction à chaque étape ?","options":["Le silence","L'explication","Une remise automatique","Le transfert de l'appel"],"c":1,"e":"À chaque étape, l'explication peut ramener à la satisfaction."}}];
+var KEY="ECH_RC_ex_J2";
+function blank(){return DATA.map(function(){return {done:false,score:0,max:0,ans:null};});}
+function loadS(){try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.length===DATA.length)return s;}catch(e){}return blank();}
+function saveS(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+var state=loadS();
+function h(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+function render(){
+  var root=document.getElementById('ateliers');root.innerHTML='';
+  DATA.forEach(function(a,ai){
+    var items=a.items.map(function(it){return {txt:it.txt,options:a.options,c:it.c,e:it.e};});
+    if(a.bonus) items.push({txt:a.bonus.txt,options:a.bonus.options,c:a.bonus.c,e:a.bonus.e,bonus:true});
+    var html='<div class="card" id="at'+ai+'"><span class="tag">'+h(a.seq)+'</span><h2>'+h(a.titre)+'</h2><div class="consigne">'+h(a.consigne)+'</div>';
+    items.forEach(function(it,ii){
+      html+='<div class="item"><div class="q">'+(it.bonus?'<span class="tag">Question finale</span>':'')+h(it.txt)+'</div><select data-a="'+ai+'" data-i="'+ii+'"><option value="">— Choisir —</option>'+it.options.map(function(o,oi){return '<option value="'+oi+'">'+h(o)+'</option>';}).join('')+'</select><div class="fb" id="fb'+ai+'_'+ii+'"></div></div>';
+    });
+    html+='<div class="row"><button class="btn" id="val'+ai+'" disabled>Valider l\'atelier</button><span class="score" id="sc'+ai+'"></span></div></div>';
+    root.insertAdjacentHTML('beforeend',html);
+    var sels=root.querySelectorAll('#at'+ai+' select'), btn=document.getElementById('val'+ai);
+    sels.forEach(function(s){s.addEventListener('change',function(){btn.disabled=Array.prototype.some.call(sels,function(x){return x.value==='';});});});
+    function validate(){
+      var ok=0;
+      items.forEach(function(it,ii){
+        var s=sels[ii], good=Number(s.value)===it.c, fb=document.getElementById('fb'+ai+'_'+ii);
+        s.classList.add(good?'ok':'ko'); s.disabled=true; if(good) ok++;
+        fb.className='fb show '+(good?'ok':'ko');
+        fb.innerHTML=(good?'<b>Exact.</b> ':'<b>Non. Bonne réponse : '+h(it.options[it.c])+'.</b> ')+h(it.e);
+      });
+      state[ai]={done:true,score:ok,max:items.length,ans:Array.prototype.map.call(sels,function(x){return x.value;})};
+      btn.disabled=true; btn.textContent='Atelier validé'; btn.classList.add('done');
+      document.getElementById('sc'+ai).textContent=ok+' / '+items.length+' bonnes réponses';
+      saveS(); recap();
+    }
+    btn.addEventListener('click',validate);
+    if(state[ai].done&&state[ai].ans){state[ai].ans.forEach(function(v,ii){if(sels[ii])sels[ii].value=v;});validate();}
+  });
+  recap();
+}
+function recap(){
+  var d=state.filter(function(s){return s.done;}), sc=d.reduce(function(a,s){return a+s.score;},0), mx=d.reduce(function(a,s){return a+s.max;},0);
+  document.getElementById('nbv').textContent=d.length+' / '+DATA.length;
+  document.getElementById('tot').textContent=mx?sc+' / '+mx:'—';
+  document.getElementById('bar').style.width=(100*d.length/DATA.length)+'%';
+}
+document.getElementById('replay').addEventListener('click',function(){ if(confirm('Tout recommencer ? Toutes vos réponses seront effacées.')){state=blank();saveS();render();window.scrollTo(0,0);} });
+render();
+</script>
+</body>
+</html>
